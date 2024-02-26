@@ -1,4 +1,4 @@
-package ru.geekbrains.DiplomProject;
+package ru.geekbrains.DiplomProject.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

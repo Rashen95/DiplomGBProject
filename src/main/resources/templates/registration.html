@@ -27,6 +27,7 @@
         h2 {
             text-align: center;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
@@ -60,38 +61,38 @@
         }
     </style>
 </head>
-    <body>
-        <div class="container">
-            <h2>Регистрация</h2>
-            <form th:action="@{/registration}" method="post" th:object="${user}" onsubmit="return validatePassword()">
-                <div>
-                    <label for="username">Имя пользователя:</label>
-                    <input type="text" id="username" name="username" th:field="*{username}" required>
-                </div>
-                <div>
-                    <label for="password">Пароль:</label>
-                    <input type="password" id="password" name="password" th:field="*{password}" required>
-                </div>
-                <div>
-                    <label for="confirmPassword">Подтверждение пароля:</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" required>
-                </div>
-                <div id="passwordMismatchError" class="error-message" style="display: none;">Введенные пароли не совпадают</div>
-                <button type="submit">Зарегистрироваться</button>
-            </form>
+<body>
+<div class="container">
+    <h2>Регистрация</h2>
+    <form th:action="@{/registration}" method="post" th:object="${user}" onsubmit="return validatePassword()">
+        <div>
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" name="username" th:field="*{username}" required>
         </div>
+        <div>
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" th:field="*{password}" required>
+        </div>
+        <div>
+            <label for="confirmPassword">Подтверждение пароля:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" required>
+        </div>
+        <div id="passwordMismatchError" class="error-message" style="display: none;">Введенные пароли не совпадают</div>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+</div>
 
-        <script>
-            function validatePassword() {
-                var password = document.getElementById("password").value;
-                var confirmPassword = document.getElementById("confirmPassword").value;
+<script>
+    function validatePassword() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
 
-                if (password !== confirmPassword) {
-                    document.getElementById("passwordMismatchError").style.display = "block";
-                    return false;
-                }
-                return true;
-            }
-        </script>
-    </body>
+        if (password !== confirmPassword) {
+            document.getElementById("passwordMismatchError").style.display = "block";
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
 </html>

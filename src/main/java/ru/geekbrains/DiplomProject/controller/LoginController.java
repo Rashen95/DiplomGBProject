@@ -1,4 +1,4 @@
-package ru.geekbrains.DiplomProject;
+package ru.geekbrains.DiplomProject.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
