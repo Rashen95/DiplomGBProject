@@ -66,8 +66,8 @@
     <h2>Регистрация</h2>
     <form th:action="@{/registration}" method="post" th:object="${user}" onsubmit="return validatePassword()">
         <div>
-            <label for="username">Имя пользователя:</label>
-            <input type="text" id="username" name="username" th:field="*{username}" required>
+            <label for="userName">Имя пользователя:</label>
+            <input type="text" id="userName" name="userName" th:field="*{userName}" required>
         </div>
         <div>
             <label for="password">Пароль:</label>
@@ -75,7 +75,7 @@
         </div>
         <div>
             <label for="confirmPassword">Подтверждение пароля:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" required>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
         </div>
         <div id="passwordMismatchError" class="error-message" style="display: none;">Введенные пароли не совпадают</div>
         <button type="submit">Зарегистрироваться</button>
