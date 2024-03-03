@@ -1,4 +1,4 @@
-package ru.geekbrains.DiplomProject.controller;
+package ru.geekbrains.DiplomGBProject.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,4 +12,3 @@ public class LoginController {
         return "login";
     }
 }
-

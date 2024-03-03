@@ -78,14 +78,22 @@
             <input type="password" id="confirmPassword" name="confirmPassword" required>
         </div>
         <div id="passwordMismatchError" class="error-message" style="display: none;">Введенные пароли не совпадают</div>
+        <div>
+            <label for="firstName">Имя:</label>
+            <input type="text" id="firstName" name="firstName" th:field="*{firstName}" required>
+        </div>
+        <div>
+            <label for="lastName">Фамилия:</label>
+            <input type="text" id="lastName" name="lastName" th:field="*{lastName}" required>
+        </div>
         <button type="submit">Зарегистрироваться</button>
     </form>
 </div>
 
 <script>
     function validatePassword() {
-        var password = document.getElementById("password").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
 
         if (password !== confirmPassword) {
             document.getElementById("passwordMismatchError").style.display = "block";
