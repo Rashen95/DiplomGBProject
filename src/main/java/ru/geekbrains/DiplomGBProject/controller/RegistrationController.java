@@ -1,13 +1,14 @@
 package ru.geekbrains.DiplomGBProject.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.geekbrains.DiplomGBProject.dto.UserDTO;
+import ru.geekbrains.DiplomGBProject.dto.SignUpRequest;
 import ru.geekbrains.DiplomGBProject.service.JwtService;
 import ru.geekbrains.DiplomGBProject.service.UserService;
 
@@ -20,7 +21,7 @@ public class RegistrationController {
 
     @GetMapping()
     public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new UserDTO());
+        model.addAttribute("user", new SignUpRequest());
         return "registration";
     }
 
@@ -30,13 +31,21 @@ public class RegistrationController {
                                @RequestParam("firstName") String firstName,
                                @RequestParam("lastName") String lastName,
                                Model model) {
+
         if (userService.findUserByUserName(userName).isPresent()) {
-            System.out.printf("Пользователь %s уже создан", userName);
+            model.addAttribute("errorMessage", "Логин уже занят");
+            model.addAttribute("user", new SignUpRequest());
         } else {
-            userService.save(new UserDTO(userName, password, firstName, lastName));
+            userService.save(new SignUpRequest(userName, password, firstName, lastName));
             System.out.printf("Пользователь %s с паролем %s зарегистрирован!%n", userName, password);
+            return "redirect:/login";
         }
-        System.out.println(jwtService.generateToken(userService.findUserByUserName(userName).get()));
-        return "redirect:/login";
+        return "registration"; //
+    }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<?> checkUsernameAvailability(@RequestParam(value = "userName") String userName) {
+        boolean isAvailable = !userService.existsByUserName(userName);
+        return ResponseEntity.ok().body(isAvailable);
     }
 }

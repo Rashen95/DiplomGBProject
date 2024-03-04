@@ -64,10 +64,12 @@
 <body>
 <div class="container">
     <h2>Регистрация</h2>
-    <form th:action="@{/registration}" method="post" th:object="${user}" onsubmit="return validatePassword()">
+    <form th:action="@{/registration}" method="post" th:object="${user}" onsubmit="return validateForm()">
+        <div th:if="${errorMessage}" class="error" th:text="${errorMessage}" style="color: red;"></div>
         <div>
-            <label for="userName">Имя пользователя:</label>
-            <input type="text" id="userName" name="userName" th:field="*{userName}" required>
+            <label for="userName">Логин:</label>
+            <input type="text" id="userName" name="userName" th:field="*{userName}" required
+                   th:classappend="${errorMessage != null} ? 'error'">
         </div>
         <div>
             <label for="password">Пароль:</label>
@@ -77,7 +79,6 @@
             <label for="confirmPassword">Подтверждение пароля:</label>
             <input type="password" id="confirmPassword" name="confirmPassword" required>
         </div>
-        <div id="passwordMismatchError" class="error-message" style="display: none;">Введенные пароли не совпадают</div>
         <div>
             <label for="firstName">Имя:</label>
             <input type="text" id="firstName" name="firstName" th:field="*{firstName}" required>
@@ -91,16 +92,51 @@
 </div>
 
 <script>
-    function validatePassword() {
+    function validateForm() {
+        const userName = document.getElementById("userName").value;
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
+        const firstName = document.getElementById("firstName").value;
+        const lastName = document.getElementById("lastName").value;
 
+
+        // Проверка на пустые строки или наличие пробелов
+        if (userName.trim() === "" || password.trim() === "" || confirmPassword.trim() === ""
+            || firstName.trim() === "" || lastName.trim() === ""
+            || userName.includes(" ") || password.includes(" ") || confirmPassword.includes(" ")
+            || firstName.includes(" ") || lastName.includes(" ")) {
+            alert("Строки не могут содержать пробелы");
+            return false;
+        }
+
+        // Проверка на использование только английских букв
+        const regex = /^[A-Za-z0-9]+$/;
+        if (!(regex.test(userName) && regex.test(password) && regex.test(confirmPassword)
+            && regex.test(firstName) && regex.test(lastName))) {
+            alert("Строки могут содержать только английские буквы с цифрами");
+            return false;
+        }
+
+        // Проверка на совпадение паролей
         if (password !== confirmPassword) {
-            document.getElementById("passwordMismatchError").style.display = "block";
+            alert("Введенные пароли не совпадают");
             return false;
         }
         return true;
     }
+
+    function checkUsernameAvailability() {
+        const userName = document.getElementById("userName").value;
+        fetch('/registration/check-username?userName=' + userName)
+            .then(response => response.json())
+            .then(data => {
+                if (!data) {
+                    alert("Пользователь с таким логином уже существует");
+                }
+            });
+    }
+
+    document.getElementById("userName").addEventListener("change", checkUsernameAvailability);
 </script>
 </body>
 </html>
