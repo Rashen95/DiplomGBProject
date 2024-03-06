@@ -24,6 +24,13 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
+        h1 {
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 24px;
+            margin-top: 0;
+        }
+
         h2 {
             text-align: center;
         }
@@ -54,44 +61,40 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        button[type="submit"] {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>Регистрация</h2>
-    <form th:action="@{/registration}" method="post" th:object="${user}" onsubmit="return validateForm()">
+    <h1>Регистрация</h1>
+    <form th:action="@{/registration/reg}" method="post" th:object="${userRegister}" onsubmit="return validateForm()">
         <div>
             <label for="userName">Логин:</label>
-
             <div th:if="${userNameExists}" class="alert" role="alert" style="font-size: 16px;">
                 <span style="color: red;">Логин <span th:text="${existingUserName}"></span> уже занят</span>
             </div>
-
             <input type="text" id="userName" name="userName" th:field="*{userName}" required>
         </div>
-
         <div>
             <label for="password">Пароль:</label>
             <input type="password" id="password" name="password" th:field="*{password}" required>
         </div>
-
         <div>
             <label for="confirmPassword">Подтверждение пароля:</label>
             <input type="password" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" required>
         </div>
-
         <div>
             <label for="firstName">Имя:</label>
             <input type="text" id="firstName" name="firstName" th:field="*{firstName}" required>
         </div>
-
         <div>
             <label for="lastName">Фамилия:</label>
             <input type="text" id="lastName" name="lastName" th:field="*{lastName}" required>
         </div>
-
-        <button type="submit" id="registerButton">Зарегистрироваться</button>
-
+        <button type="submit">Зарегистрироваться</button>
     </form>
 </div>
 <script>
@@ -102,6 +105,20 @@
         const firstName = document.getElementById("firstName").value;
         const lastName = document.getElementById("lastName").value;
         let rc = true;
+
+        // Проверка на длину логина и пароля
+        if (password.length > 30 || password.length < 6
+            || userName.length > 30 || userName.length < 6
+            || confirmPassword.length > 30 || confirmPassword.length < 6) {
+            alert("Длина логина и пароля должна быть от 6 до 30 символов");
+            rc = false;
+        }
+
+        if (firstName.length > 30 || userName.length < 2
+            || lastName.length > 30 || lastName.length < 2) {
+            alert("Имя и фамилия должны быть от 2 до 30 символов");
+            rc = false;
+        }
 
         // Проверка на пустые строки или наличие пробелов
         if (userName.includes(" ") || password.includes(" ") || confirmPassword.includes(" ")

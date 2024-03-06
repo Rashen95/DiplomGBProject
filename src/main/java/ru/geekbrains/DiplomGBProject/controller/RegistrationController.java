@@ -20,11 +20,11 @@ public class RegistrationController {
 
     @GetMapping()
     public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new SignUpRequest());
+        model.addAttribute("userRegister", new SignUpRequest());
         return "registration";
     }
 
-    @PostMapping()
+    @PostMapping("/reg")
     public String registerUser(@RequestParam("userName") String userName,
                                @RequestParam("password") String password,
                                @RequestParam("confirmPassword") String confirmPassword,
@@ -32,17 +32,17 @@ public class RegistrationController {
                                @RequestParam("lastName") String lastName,
                                Model model) {
         if (userService.existsByUserName(userName)) {
-            model.addAttribute("user", SignUpRequest.builder()
+            model.addAttribute("userRegister", SignUpRequest.builder()
                     .firstName(firstName)
                     .lastName(lastName)
                     .build());
             model.addAttribute("userNameExists", true);
             model.addAttribute("existingUserName", userName);
-            return "/registration";
+            return "registration";
         } else {
             userService.save(new SignUpRequest(userName, password, confirmPassword, firstName, lastName));
             System.out.printf("Пользователь %s с паролем %s зарегистрирован!%n", userName, password);
-            return "login";
+            return "redirect:login";
         }
     }
 }

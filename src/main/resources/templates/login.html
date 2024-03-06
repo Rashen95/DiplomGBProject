@@ -63,21 +63,21 @@
         }
 
         button[type="submit"] {
-            margin-top: 10px; /* уменьшаем отступ */
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>Менеджер заявок</h1>
-    <form th:action="@{/login}" method="post">
+    <form th:action="@{/login/log}" method="post" th:object="${userLogin}" onsubmit="return validateForm()">
         <div>
-            <label for="username">Имя пользователя:</label>
-            <input type="text" id="username" name="username" required>
+            <label for="userName">Логин:</label>
+            <input type="text" id="userName" name="userName" th:field="*{userName}" required>
         </div>
         <div>
             <label for="password">Пароль:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" th:field="*{password}" required>
         </div>
         <button type="submit">Войти</button>
     </form>
@@ -85,5 +85,27 @@
         <button type="submit">Зарегистрироваться</button>
     </form>
 </div>
+<script>
+    function validateForm() {
+        const userName = document.getElementById("userName").value;
+        const password = document.getElementById("password").value;
+        let rc = true;
+
+        // Проверка на пустые строки или наличие пробелов
+        if (userName.includes(" ") || password.includes(" ")) {
+            alert("Строки не могут содержать пробелы");
+            rc = false;
+        }
+
+        // Проверка на использование только английских букв
+        const regex1 = /^[A-Za-z0-9]+$/;
+        if (!(regex1.test(userName) && regex1.test(password))) {
+            alert("Логин и пароль могут содержать только английские символы и цифры");
+            rc = false;
+        }
+
+        return rc;
+    }
+</script>
 </body>
 </html>

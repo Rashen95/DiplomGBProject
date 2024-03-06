@@ -3,17 +3,17 @@ create schema my_schema
 create table my_schema.users
 (
     id       bigserial,
-    user_name varchar(100) not null unique,
+    user_name varchar(30) not null unique,
     password varchar(100) not null,
-    first_name varchar(100) not null,
-    last_name varchar(100) not null,
+    first_name varchar(30) not null,
+    last_name varchar(30) not null,
     primary key (id)
 );
 
 create table my_schema.roles
 (
     id   serial,
-    name varchar(50) not null,
+    name varchar(30) not null,
     primary key (id)
 );
 

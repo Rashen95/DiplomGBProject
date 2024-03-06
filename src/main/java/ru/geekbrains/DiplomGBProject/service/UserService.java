@@ -2,6 +2,9 @@ package ru.geekbrains.DiplomGBProject.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.DiplomGBProject.dto.SignUpRequest;
 import ru.geekbrains.DiplomGBProject.entity.User;
@@ -15,19 +18,28 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Optional<User> findUserByUserName(String userName) {
-        return userRepository.findByUserName(userName);
+        // Обязательно преобразуем логин к маленьким буквам
+        return userRepository.findByUserName(userName.toLowerCase());
     }
 
-    public User save(SignUpRequest signUpRequest) {
+    public void save(SignUpRequest signUpRequest) {
+        // Преобразование имени и фамилии к классическому варианту с большой буквы
+        String firstName = signUpRequest.getFirstName();
+        firstName = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
+        String lastName = signUpRequest.getLastName();
+        lastName = lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase();
+
         User user = new User(
-                signUpRequest.getUserName(),
-                signUpRequest.getPassword(),
-                signUpRequest.getFirstName(),
-                signUpRequest.getLastName(),
+                // логин всегда маленькими буквами
+                signUpRequest.getUserName().toLowerCase(),
+                passwordEncoder.encode(signUpRequest.getPassword()),
+                firstName,
+                lastName,
                 roleRepository.findRoleByName("ROLE_USER"));
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public User getCurrentUser() {
@@ -37,6 +49,17 @@ public class UserService {
     }
 
     public boolean existsByUserName(String userName) {
-        return userRepository.existsByUserName(userName);
+        // Обязательно преобразуем логин к маленьким буквам
+        return userRepository.existsByUserName(userName.toLowerCase());
+    }
+
+    public UserDetailsService userDetailsService() {
+        return this::getByUserName;
+    }
+
+    public User getByUserName(String username) {
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+
     }
 }
