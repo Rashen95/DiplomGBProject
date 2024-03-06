@@ -62,85 +62,75 @@
     <form th:action="@{/registration}" method="post" th:object="${user}" onsubmit="return validateForm()">
         <div>
             <label for="userName">Логин:</label>
+
+            <div th:if="${userNameExists}" class="alert" role="alert" style="font-size: 16px;">
+                <span style="color: red;">Логин <span th:text="${existingUserName}"></span> уже занят</span>
+            </div>
+
             <input type="text" id="userName" name="userName" th:field="*{userName}" required>
         </div>
+
         <div>
             <label for="password">Пароль:</label>
             <input type="password" id="password" name="password" th:field="*{password}" required>
         </div>
+
         <div>
             <label for="confirmPassword">Подтверждение пароля:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required>
+            <input type="password" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" required>
         </div>
+
         <div>
             <label for="firstName">Имя:</label>
             <input type="text" id="firstName" name="firstName" th:field="*{firstName}" required>
         </div>
+
         <div>
             <label for="lastName">Фамилия:</label>
             <input type="text" id="lastName" name="lastName" th:field="*{lastName}" required>
         </div>
-        <button type="submit">Зарегистрироваться</button>
+
+        <button type="submit" id="registerButton">Зарегистрироваться</button>
+
     </form>
 </div>
 <script>
-    async function checkUsername(userName) {
-        try {
-            const response = await fetch('/registration/check-username?userName=' + userName);
-            return await response.json();
-        } catch (error) {
-            console.error('Ошибка при выполнении fetch запроса:', error);
-            return false; // В случае ошибки также возвращаем false
-        }
-    }
-
-    async function validateForm(event) {
-        event.preventDefault(); // Отменяем стандартное поведение отправки формы
-
+    function validateForm() {
         const userName = document.getElementById("userName").value;
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
         const firstName = document.getElementById("firstName").value;
         const lastName = document.getElementById("lastName").value;
+        let rc = true;
 
-        const existingUser = await checkUsername(userName);
-        if (!existingUser) {
-            alert("Пользователь с таким логином уже существует");
-            return false; // Прекращаем выполнение функции, чтобы форма не отправлялась
-        }
-
-        // Если пользователя с таким логином нет, продолжаем с проверкой формы
         // Проверка на пустые строки или наличие пробелов
-        if (userName.trim() === "" || password.trim() === ""
-            || confirmPassword.trim() === "" || firstName.trim() === ""
-            || lastName.trim() === "" || userName.includes(" ")
-            || password.includes(" ") || confirmPassword.includes(" ")
+        if (userName.includes(" ") || password.includes(" ") || confirmPassword.includes(" ")
             || firstName.includes(" ") || lastName.includes(" ")) {
             alert("Строки не могут содержать пробелы");
-            return false;
+            rc = false;
         }
 
         // Проверка на использование только английских букв
         const regex1 = /^[A-Za-z0-9]+$/;
         if (!(regex1.test(userName) && regex1.test(password) && regex1.test(confirmPassword))) {
             alert("Логин и пароль могут содержать только английские символы и цифры");
-            return false;
+            rc = false;
         }
 
         // Проверка на использование только русских букв
         const regex2 = /^[А-Яа-я]+$/;
         if (!(regex2.test(firstName) && regex2.test(lastName))) {
             alert("Имя и фамилия могут содержать только русские буквы");
-            return false;
+            rc = false;
         }
 
         // Проверка на совпадение паролей
         if (password !== confirmPassword) {
             alert("Введенные пароли не совпадают");
-            return false;
+            rc = false;
         }
-        // Если все проверки пройдены успешно, форма будет отправлена
-        event.target.submit();
+
+        return rc;
     }
 </script>
 </body>

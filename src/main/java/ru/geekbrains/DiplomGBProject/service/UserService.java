@@ -21,7 +21,8 @@ public class UserService {
     }
 
     public User save(SignUpRequest signUpRequest) {
-        User user = new User(signUpRequest.getUserName(),
+        User user = new User(
+                signUpRequest.getUserName(),
                 signUpRequest.getPassword(),
                 signUpRequest.getFirstName(),
                 signUpRequest.getLastName(),

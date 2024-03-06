@@ -1,7 +1,6 @@
 package ru.geekbrains.DiplomGBProject.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,22 +27,22 @@ public class RegistrationController {
     @PostMapping()
     public String registerUser(@RequestParam("userName") String userName,
                                @RequestParam("password") String password,
+                               @RequestParam("confirmPassword") String confirmPassword,
                                @RequestParam("firstName") String firstName,
                                @RequestParam("lastName") String lastName,
                                Model model) {
-        if (userName.isEmpty()) {
-            model.addAttribute("user", new SignUpRequest());
+        if (userService.existsByUserName(userName)) {
+            model.addAttribute("user", SignUpRequest.builder()
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .build());
+            model.addAttribute("userNameExists", true);
+            model.addAttribute("existingUserName", userName);
             return "/registration";
         } else {
-            userService.save(new SignUpRequest(userName, password, firstName, lastName));
+            userService.save(new SignUpRequest(userName, password, confirmPassword, firstName, lastName));
             System.out.printf("Пользователь %s с паролем %s зарегистрирован!%n", userName, password);
             return "login";
         }
-    }
-
-    @GetMapping("/check-username")
-    public ResponseEntity<?> checkUsernameAvailability(@RequestParam(value = "userName") String userName) {
-        boolean isAvailable = !userService.existsByUserName(userName);
-        return ResponseEntity.ok().body(isAvailable);
     }
 }
