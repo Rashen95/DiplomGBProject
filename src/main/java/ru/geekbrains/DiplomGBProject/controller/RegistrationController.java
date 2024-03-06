@@ -31,16 +31,14 @@ public class RegistrationController {
                                @RequestParam("firstName") String firstName,
                                @RequestParam("lastName") String lastName,
                                Model model) {
-
-        if (userService.findUserByUserName(userName).isPresent()) {
-            model.addAttribute("errorMessage", "Логин уже занят");
+        if (userName.isEmpty()) {
             model.addAttribute("user", new SignUpRequest());
+            return "/registration";
         } else {
             userService.save(new SignUpRequest(userName, password, firstName, lastName));
             System.out.printf("Пользователь %s с паролем %s зарегистрирован!%n", userName, password);
-            return "redirect:/login";
+            return "login";
         }
-        return "registration"; //
     }
 
     @GetMapping("/check-username")
