@@ -1,6 +1,7 @@
 package ru.geekbrains.DiplomGBProject.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import ru.geekbrains.DiplomGBProject.service.UserService;
 @RequestMapping("/login")
 public class LoginController {
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping()
     public String getLoginPage(Model model) {
@@ -27,7 +29,7 @@ public class LoginController {
                             @RequestParam("password") String password,
                             Model model) {
         if (userService.existsByUserName(userName)
-                && userService.findUserByUserName(userName).get().getPassword().equals(password)) {
+                && userService.findUserByUserName(userName).get().getPassword().equals(passwordEncoder.encode(password))) {
             System.out.println("ЧЕТКО");
         } else {
             System.out.println("Такого пользователя нет");

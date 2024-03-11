@@ -15,8 +15,11 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.thymeleaf.util.StringUtils;
+import ru.geekbrains.DiplomGBProject.entity.User;
 import ru.geekbrains.DiplomGBProject.service.JwtService;
 import ru.geekbrains.DiplomGBProject.service.UserService;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -45,18 +48,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = jwtService.extractUserName(jwt);
 
         if (!StringUtils.isEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService
-                    .userDetailsService()
-                    .loadUserByUsername(username);
+            Optional<User> userDetails = userService.findUserByUserName(username);
+
+            if (userDetails.isEmpty()) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             // Если токен валиден, то аутентифицируем пользователя
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            if (jwtService.isTokenValid(jwt, userDetails.get())) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        userDetails.getAuthorities()
+                        userDetails.get().getAuthorities()
                 );
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

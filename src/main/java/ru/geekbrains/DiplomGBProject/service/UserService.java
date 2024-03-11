@@ -2,8 +2,6 @@ package ru.geekbrains.DiplomGBProject.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.DiplomGBProject.dto.SignUpRequest;
@@ -42,24 +40,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User getCurrentUser() {
-        // Получение имени пользователя из контекста Spring Security
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        return findUserByUserName(userName).get();
-    }
-
     public boolean existsByUserName(String userName) {
         // Обязательно преобразуем логин к маленьким буквам
         return userRepository.existsByUserName(userName.toLowerCase());
-    }
-
-    public UserDetailsService userDetailsService() {
-        return this::getByUserName;
-    }
-
-    public User getByUserName(String username) {
-        return userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
-
     }
 }
