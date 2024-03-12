@@ -26,7 +26,7 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(name = "user_name")
-    private String userName;
+    private String username;
 
     @Column(name = "password")
     private String password;
@@ -37,30 +37,21 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "users_roles", schema = "my_schema",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
 
-    public User(String userName, String password, String firstName, String lastName, Role role) {
-        this.userName = userName;
+    public User(String username, String password, String firstName, String lastName, Role role) {
+        this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.roles.add(role);
+        this.role = role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(getRoles().toString()));
-    }
-
-    @Override
-    public String getUsername() {
-        return this.userName;
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.geekbrains.DiplomGBProject.dto.SignUpRequest;
+import ru.geekbrains.DiplomGBProject.service.AuthenticationService;
 import ru.geekbrains.DiplomGBProject.service.JwtService;
 import ru.geekbrains.DiplomGBProject.service.UserService;
 
@@ -17,6 +18,7 @@ import ru.geekbrains.DiplomGBProject.service.UserService;
 public class RegistrationController {
     private final UserService userService;
     private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
 
     @GetMapping()
     public String showRegistrationForm(Model model) {
@@ -27,11 +29,10 @@ public class RegistrationController {
     @PostMapping("/reg")
     public String registerUser(@RequestParam("userName") String userName,
                                @RequestParam("password") String password,
-                               @RequestParam("confirmPassword") String confirmPassword,
                                @RequestParam("firstName") String firstName,
                                @RequestParam("lastName") String lastName,
                                Model model) {
-        if (userService.existsByUserName(userName)) {
+        if (userService.findByUserName(userName).isPresent()) {
             model.addAttribute("userRegister", SignUpRequest.builder()
                     .firstName(firstName)
                     .lastName(lastName)
@@ -40,7 +41,13 @@ public class RegistrationController {
             model.addAttribute("existingUserName", userName);
             return "registration";
         } else {
-            userService.save(new SignUpRequest(userName, password, confirmPassword, firstName, lastName));
+            authenticationService.signUp(SignUpRequest.builder()
+                    .userName(userName)
+                    .password(password)
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .build()
+            );
             System.out.printf("Пользователь %s с паролем %s зарегистрирован!%n", userName, password);
             return "redirect:login";
         }
