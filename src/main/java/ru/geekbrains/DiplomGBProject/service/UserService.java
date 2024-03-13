@@ -9,42 +9,25 @@ import ru.geekbrains.DiplomGBProject.repository.UserRepository;
 
 import java.util.Optional;
 
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    /**
-     * Сохранение пользователя
-     */
     public void save(User user) {
         userRepository.save(user);
     }
 
-    /**
-     * Получение пользователя по имени пользователя
-     *
-     * @return пользователь
-     */
-    public User getByUserName(String username) {
-        return userRepository.findByUsername(username)
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username.toLowerCase())
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
-
     }
 
     public Optional<User> findByUserName(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username.toLowerCase());
     }
 
-    /**
-     * Получение пользователя по имени пользователя
-     * <p>
-     * Нужен для Spring Security
-     *
-     * @return пользователь
-     */
     public UserDetailsService userDetailsService() {
-        return this::getByUserName;
+        return this::getByUsername;
     }
 }

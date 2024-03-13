@@ -27,21 +27,22 @@ public class LoginController {
     }
 
     @PostMapping("/log")
-    public String loginUser(@RequestParam("userName") String userName,
+    public String loginUser(@RequestParam("username") String username,
                             @RequestParam("password") String password,
                             Model model) {
-        if (userService.findByUserName(userName).isPresent()
-                && passwordEncoder.matches(password, userService.getByUserName(userName).getPassword())) {
-            model.addAttribute("message",
-                    authenticationService.signIn(
-                                    SignInRequest.builder()
-                                            .userName(userName)
-                                            .password(password)
-                                            .build())
-                            .getToken());
+        if (userService.findByUserName(username).isPresent()
+                && passwordEncoder.matches(password, userService.findByUserName(username).get().getPassword())) {
+            model.addAttribute("jwtToken",
+                    authenticationService.signIn(SignInRequest.builder()
+                            .username(username)
+                            .password(password)
+                            .build()).getToken());
             return "token";
         } else {
-            return "redirect:login";
+            model.addAttribute("userLogin", new SignInRequest());
+            model.addAttribute("notFound", true);
+            model.addAttribute("notFoundedUsername", username);
+            return "login";
         }
     }
 }

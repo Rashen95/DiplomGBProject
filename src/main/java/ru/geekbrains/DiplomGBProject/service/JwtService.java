@@ -20,17 +20,21 @@ public class JwtService {
     @Value("${token.signing.key}")
     private String jwtSigningKey;
 
+    // Токен на 30 суток
+    @Value("${token.expirationTime}")
+    private Long expirationTime;
+
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof User customUserDetails) {
-            claims.put("id", customUserDetails.getId());
-            claims.put("role", customUserDetails.getRole());
+        if (userDetails instanceof User) {
+            claims.put("id", ((User) userDetails).getId());
+            claims.put("role", ((User) userDetails).getRole());
         }
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSigningKey()).compact();
     }
 
@@ -43,7 +47,7 @@ public class JwtService {
         return claimsResolvers.apply(claims);
     }
 
-    public String extractUserName(String token) {
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -52,12 +56,12 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return extractExpiration(token).before(new Date(System.currentTimeMillis()));
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     private SecretKey getSigningKey() {

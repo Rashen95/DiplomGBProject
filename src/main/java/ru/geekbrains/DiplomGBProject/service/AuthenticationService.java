@@ -12,7 +12,6 @@ import ru.geekbrains.DiplomGBProject.entity.Role;
 import ru.geekbrains.DiplomGBProject.entity.User;
 import ru.geekbrains.DiplomGBProject.security.JwtAuthenticationResponse;
 
-
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -23,30 +22,24 @@ public class AuthenticationService {
 
     public void signUp(SignUpRequest request) {
         User user = User.builder()
-                .username(request.getUserName())
+                .username(request.getUsername().toLowerCase())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstName(request.getFirstName().substring(0,1).toUpperCase().substring(1).toLowerCase())
+                .lastName(request.getLastName().substring(0,1).toUpperCase().substring(1).toLowerCase())
                 .role(Role.ROLE_USER)
                 .build();
         userService.save(user);
     }
 
-    /**
-     * Аутентификация пользователя
-     *
-     * @param request данные пользователя
-     * @return токен
-     */
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUserName(),
+                request.getUsername().toLowerCase(),
                 request.getPassword()
         ));
 
         UserDetails user = userService
                 .userDetailsService()
-                .loadUserByUsername(request.getUserName());
+                .loadUserByUsername(request.getUsername().toLowerCase());
 
         String jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);

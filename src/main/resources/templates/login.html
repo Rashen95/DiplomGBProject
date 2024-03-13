@@ -72,8 +72,12 @@
     <h1>Менеджер заявок</h1>
     <form th:action="@{/login/log}" method="post" th:object="${userLogin}" onsubmit="return validateForm()">
         <div>
-            <label for="userName">Логин:</label>
-            <input type="text" id="userName" name="userName" th:field="*{userName}" required>
+            <label for="username">Логин:</label>
+            <div th:if="${notFound}" class="alert" role="alert" style="font-size: 16px;">
+                <span style="color: red;">Логин <span
+                        th:text="${notFoundedUsername}"></span> или пароль не подошли</span>
+            </div>
+            <input type="text" id="username" name="username" th:field="*{username}" required>
         </div>
         <div>
             <label for="password">Пароль:</label>
@@ -87,19 +91,19 @@
 </div>
 <script>
     function validateForm() {
-        const userName = document.getElementById("userName").value;
+        const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
         let rc = true;
 
         // Проверка на пустые строки или наличие пробелов
-        if (userName.includes(" ") || password.includes(" ")) {
+        if (username.includes(" ") || password.includes(" ")) {
             alert("Строки не могут содержать пробелы");
             rc = false;
         }
 
         // Проверка на использование только английских букв
         const regex1 = /^[A-Za-z0-9]+$/;
-        if (!(regex1.test(userName) && regex1.test(password))) {
+        if (!(regex1.test(username) && regex1.test(password))) {
             alert("Логин и пароль могут содержать только английские символы и цифры");
             rc = false;
         }
