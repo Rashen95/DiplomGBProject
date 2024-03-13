@@ -46,7 +46,6 @@ public class RegistrationController {
                     .lastName(lastName)
                     .build()
             );
-            System.out.printf("Пользователь %s с паролем %s зарегистрирован!%n", username, password);
             return "redirect:login";
         }
     }

@@ -21,11 +21,16 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public void signUp(SignUpRequest request) {
+        String firstName = request.getFirstName().substring(0,1).toUpperCase()
+                + request.getFirstName().substring(1).toLowerCase();
+        String lastName = request.getLastName().substring(0,1).toUpperCase()
+                + request.getLastName().substring(1).toLowerCase();
+
         User user = User.builder()
                 .username(request.getUsername().toLowerCase())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName().substring(0,1).toUpperCase().substring(1).toLowerCase())
-                .lastName(request.getLastName().substring(0,1).toUpperCase().substring(1).toLowerCase())
+                .firstName(firstName)
+                .lastName(lastName)
                 .role(Role.ROLE_USER)
                 .build();
         userService.save(user);
