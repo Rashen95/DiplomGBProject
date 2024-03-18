@@ -21,7 +21,7 @@ public class ApplicationService {
     private final JwtService jwtService;
 
     public List<Application> getAll() {
-        return applicationRepository.getAll();
+        return applicationRepository.findAll();
     }
 
     public List<Application> getAllByStatus(Status status) {
@@ -29,15 +29,11 @@ public class ApplicationService {
     }
 
     public List<Application> getAllByUser(String authorization) {
-        String jwt = authorization.substring(BEARER_PREFIX.length());
-        String username = jwtService.extractUsername(jwt);
-        return applicationRepository.getAllByUser(userService.findByUserName(username).get());
+        return applicationRepository.getAllByUser(getUserFromToken(authorization));
     }
 
     public List<Application> getAllByUserAndStatus(String authorization, Status status) {
-
-
-        return applicationRepository.getAllByUserAndStatus(user, status);
+        return applicationRepository.getAllByUserAndStatus(getUserFromToken(authorization), status);
     }
 
     public Optional<Application> deleteById(Long id) {
@@ -49,15 +45,12 @@ public class ApplicationService {
     }
 
     public void save(String name, String description, String authorization) {
-        String jwt = authorization.substring(BEARER_PREFIX.length());
-        String username = jwtService.extractUsername(jwt);
-
         applicationRepository.save(Application.builder()
                 .name(name)
                 .description(description)
                 .creationDate(LocalDateTime.now())
                 .status(Status.NOT_STARTED)
-                .user(userService.findByUserName(username).get())
+                .user(getUserFromToken(authorization))
                 .build());
     }
 
@@ -68,5 +61,11 @@ public class ApplicationService {
             applicationRepository.save(application.get());
         }
         return application;
+    }
+
+    public User getUserFromToken(String authorization) {
+        String jwt = authorization.substring(BEARER_PREFIX.length());
+        String username = jwtService.extractUsername(jwt);
+        return userService.findByUserName(username).get();
     }
 }

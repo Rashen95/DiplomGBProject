@@ -21,9 +21,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public void signUp(SignUpRequest request) {
-        String firstName = request.getFirstName().substring(0,1).toUpperCase()
+        String firstName = request.getFirstName().substring(0, 1).toUpperCase()
                 + request.getFirstName().substring(1).toLowerCase();
-        String lastName = request.getLastName().substring(0,1).toUpperCase()
+        String lastName = request.getLastName().substring(0, 1).toUpperCase()
                 + request.getLastName().substring(1).toLowerCase();
 
         User user = User.builder()
