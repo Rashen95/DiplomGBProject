@@ -30,4 +30,12 @@ public class UserService {
     public UserDetailsService userDetailsService() {
         return this::getByUsername;
     }
+
+    public Optional<User> deleteById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (userRepository.findById(id).isPresent() && id != 1) {
+            userRepository.deleteById(id);
+        }
+        return user;
+    }
 }
