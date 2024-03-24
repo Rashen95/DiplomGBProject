@@ -26,7 +26,7 @@
 
 #### For USER:
 
-1. @PostMapping("/create") - создание заявки. Принимает параметрами *name* и *description*.
+1. @PostMapping("/applications/create") - создание заявки. Принимает параметрами *name* и *description*.
 2. @GetMapping("/user/list") - получение списка всех заявок данного пользователя.
 3. @GetMapping("/user/list_by_status") - получение списка всех заявок по статусу данного пользователя. Принимает
    параметром *status (not_started; in_progress; complete)*.
