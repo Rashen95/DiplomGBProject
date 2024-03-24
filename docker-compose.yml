@@ -12,3 +12,14 @@ services:
       - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  java_app:
+    container_name: java-app
+    image: openjdk:17-jdk-alpine
+    volumes:
+      - ./DiplomGBProject.jar:/app/DiplomGBProject.jar
+    command: ["java", "-jar", "/app/DiplomGBProject.jar"]
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
